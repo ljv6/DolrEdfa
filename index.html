@@ -44,16 +44,16 @@
 
   <script src="https://edfa-pay.com/sdk.js"></script>
   <script>
-    // 🔹 ضع هنا Merchant ID حقيك من حساب EdfaPay
-    const merchantId = "YOUR_MERCHANT_ID";
+    // 🔹 معرف التاجر من حسابك في EdfaPay
+    const merchantId = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
 
     // زر الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
       const amount = document.getElementById('amount').value;
       EdfaPay.checkout({
-        amount: amount,         // المبلغ الذي اختاره المستخدم
-        currency: 'SAR',        // العملة
-        merchantId: merchantId, // ضع هنا Merchant ID من حسابك
+        amount: amount,
+        currency: 'SAR',
+        merchantId: merchantId,
         onSuccess: function(res) {
           alert('تم الدفع بنجاح!');
         },
@@ -68,9 +68,9 @@
     document.getElementById('applePayButton').addEventListener('click', function() {
       const amount = document.getElementById('amount').value;
       EdfaPay.applePay({
-        amount: amount,         // المبلغ
-        currency: 'SAR',        // العملة
-        merchantId: merchantId, // ضع هنا Merchant ID من حسابك
+        amount: amount,
+        currency: 'SAR',
+        merchantId: merchantId,
         onSuccess: function(res) {
           alert('تم الدفع بنجاح عبر Apple Pay!');
         },
