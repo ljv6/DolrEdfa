@@ -1,31 +1,86 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>صفحة دفع</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحة الدفع - EdfaPay</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f9f9f9;
+    }
+    h2 { margin-bottom: 20px; }
+    select, button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    #applePayButton {
+      background-color: black;
+      color: white;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>الدفع</h1>
 
-    <div class="prices">
-      <button onclick="selectAmount(50)">50 ريال</button>
-      <button onclick="selectAmount(100)">100 ريال</button>
-      <button onclick="selectAmount(200)">200 ريال</button>
-    </div>
+  <h2>اختر المبلغ:</h2>
+  <select id="amount">
+    <option value="50">50 ريال</option>
+    <option value="100">100 ريال</option>
+    <option value="200">200 ريال</option>
+  </select>
 
-    <div class="custom">
-      <label>أو أدخل مبلغ آخر</label>
-      <input type="number" id="amount" placeholder="مثال: 150" />
-    </div>
+  <br>
 
-    <button class="pay" onclick="payNow()">الدفع الآن</button>
+  <!-- زر الدفع العادي -->
+  <button id="payButton">ادفع الآن</button>
 
-    <p class="note">الدفع عبر ادفع باي (Apple Pay / مدى)</p>
-  </div>
+  <!-- زر Apple Pay -->
+  <button id="applePayButton">Apple Pay</button>
 
-  <script src="script.js"></script>
+  <script src="https://edfa-pay.com/sdk.js"></script>
+  <script>
+    // 🔹 ضع هنا Merchant ID حقيك من حساب EdfaPay
+    const merchantId = "YOUR_MERCHANT_ID";
+
+    // زر الدفع العادي
+    document.getElementById('payButton').addEventListener('click', function() {
+      const amount = document.getElementById('amount').value;
+      EdfaPay.checkout({
+        amount: amount,         // المبلغ الذي اختاره المستخدم
+        currency: 'SAR',        // العملة
+        merchantId: merchantId, // ضع هنا Merchant ID من حسابك
+        onSuccess: function(res) {
+          alert('تم الدفع بنجاح!');
+        },
+        onError: function(err) {
+          alert('حدث خطأ في الدفع.');
+          console.error(err);
+        }
+      });
+    });
+
+    // زر Apple Pay
+    document.getElementById('applePayButton').addEventListener('click', function() {
+      const amount = document.getElementById('amount').value;
+      EdfaPay.applePay({
+        amount: amount,         // المبلغ
+        currency: 'SAR',        // العملة
+        merchantId: merchantId, // ضع هنا Merchant ID من حسابك
+        onSuccess: function(res) {
+          alert('تم الدفع بنجاح عبر Apple Pay!');
+        },
+        onError: function(err) {
+          alert('حدث خطأ في Apple Pay.');
+          console.error(err);
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
