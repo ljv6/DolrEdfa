@@ -6,87 +6,122 @@
   <title>صفحة الدفع - EdfaPay</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
       text-align: center;
-      padding: 50px;
-      background-color: #f9f9f9;
+      width: 320px;
     }
-    h2 { margin-bottom: 20px; }
-    input, button {
+
+    h1 {
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
       font-size: 18px;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+      margin-bottom: 20px;
     }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: 0.2s;
+    }
+
+    #payButton {
+      background-color: #007bff;
+      color: white;
+    }
+    #payButton:hover {
+      background-color: #0056b3;
+    }
+
     #applePayButton {
       background-color: black;
       color: white;
-      border: none;
+      display: none; /* يظهر فقط على الأجهزة المدعومة */
+    }
+    #applePayButton:hover {
+      background-color: #222;
+    }
+
+    #confirmation {
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <h2>أدخل المبلغ:</h2>
-  <input type="number" id="amount" placeholder="ضع المبلغ هنا" min="1">
+  <div class="container">
+    <h1>أدخل المبلغ للدفع</h1>
+    <input type="number" id="amount" placeholder="ضع المبلغ هنا" min="1">
 
-  <br>
+    <button id="payButton">ادفع الآن</button>
+    <button id="applePayButton">Apple Pay</button>
 
-  <!-- زر الدفع العادي -->
-  <button id="payButton">ادفع الآن</button>
+    <div id="confirmation">تم الدفع بنجاح!</div>
+  </div>
 
-  <!-- زر Apple Pay -->
-  <button id="applePayButton">Apple Pay</button>
-
-  <script src="https://edfa-pay.com/sdk.js"></script>
   <script>
-    // 🔹 معرف التاجر الحقيقي
     const merchantId = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
 
-    // دالة للتحقق من المبلغ المدخل
-    function getValidAmount() {
+    // تظهر زر Apple Pay فقط على الأجهزة المدعومة
+    if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+      document.getElementById('applePayButton').style.display = 'block';
+    }
+
+    function getAmount() {
       const amount = parseFloat(document.getElementById('amount').value);
-      if (isNaN(amount) || amount <= 0) {
+      if (!amount || amount <= 0) {
         alert("الرجاء إدخال مبلغ صالح أكبر من 0 ريال!");
         return null;
       }
       return amount;
     }
 
-    // زر الدفع العادي
+    // الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
-      const amount = getValidAmount();
+      const amount = getAmount();
       if (!amount) return;
-      EdfaPay.checkout({
-        amount: amount,
-        currency: 'SAR',
-        merchantId: merchantId,
-        onSuccess: function(res) {
-          alert('تم الدفع بنجاح!');
-        },
-        onError: function(err) {
-          alert('حدث خطأ في الدفع.');
-          console.error(err);
-        }
-      });
+      window.open(`https://edfa-pay.com/checkout?merchantId=${merchantId}&amount=${amount}`, '_blank');
+      document.getElementById('confirmation').style.display = 'block';
+      document.getElementById('confirmation').textContent = 'تم تحويلك إلى صفحة الدفع!';
     });
 
-    // زر Apple Pay
+    // Apple Pay
     document.getElementById('applePayButton').addEventListener('click', function() {
-      const amount = getValidAmount();
+      const amount = getAmount();
       if (!amount) return;
-      EdfaPay.applePay({
-        amount: amount,
-        currency: 'SAR',
-        merchantId: merchantId,
-        onSuccess: function(res) {
-          alert('تم الدفع بنجاح عبر Apple Pay!');
-        },
-        onError: function(err) {
-          alert('حدث خطأ في Apple Pay.');
-          console.error(err);
-        }
-      });
+      window.open(`https://edfa-pay.com/applepay?merchantId=${merchantId}&amount=${amount}`, '_blank');
+      document.getElementById('confirmation').style.display = 'block';
+      document.getElementById('confirmation').textContent = 'تم تحويلك إلى Apple Pay!';
     });
   </script>
 
