@@ -43,13 +43,20 @@
     // 🔹 معرف التاجر الحقيقي
     const merchantId = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
 
+    // دالة للتحقق من المبلغ المدخل
+    function getValidAmount() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert("الرجاء إدخال مبلغ صالح أكبر من 0 ريال!");
+        return null;
+      }
+      return amount;
+    }
+
     // زر الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
-      const amount = document.getElementById('amount').value;
-      if (!amount || amount <= 0) {
-        alert("الرجاء إدخال مبلغ صالح!");
-        return;
-      }
+      const amount = getValidAmount();
+      if (!amount) return;
       EdfaPay.checkout({
         amount: amount,
         currency: 'SAR',
@@ -66,11 +73,8 @@
 
     // زر Apple Pay
     document.getElementById('applePayButton').addEventListener('click', function() {
-      const amount = document.getElementById('amount').value;
-      if (!amount || amount <= 0) {
-        alert("الرجاء إدخال مبلغ صالح!");
-        return;
-      }
+      const amount = getValidAmount();
+      if (!amount) return;
       EdfaPay.applePay({
         amount: amount,
         currency: 'SAR',
