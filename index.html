@@ -67,13 +67,6 @@
     #applePayButton:hover {
       background-color: #222;
     }
-
-    #confirmation {
-      margin-top: 20px;
-      font-size: 18px;
-      color: green;
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -84,8 +77,6 @@
 
     <button id="payButton">ادفع الآن</button>
     <button id="applePayButton">Apple Pay</button>
-
-    <div id="confirmation">تم الدفع بنجاح!</div>
   </div>
 
   <script>
@@ -105,30 +96,18 @@
       return amount;
     }
 
-    function openCheckout(url, successMessage) {
-      const newWindow = window.open(url, '_blank');
-      if (newWindow) {
-        document.getElementById('confirmation').style.display = 'block';
-        document.getElementById('confirmation').textContent = successMessage;
-      } else {
-        alert("يرجى السماح بفتح النوافذ المنبثقة في المتصفح.");
-      }
-    }
-
     // الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
       const amount = getAmount();
       if (!amount) return;
-      const url = `https://edfa-pay.com/checkout?merchantId=${merchantId}&amount=${amount}`;
-      openCheckout(url, 'تم تحويلك إلى صفحة الدفع!');
+      window.location.href = `https://edfa-pay.com/checkout?merchantId=${merchantId}&amount=${amount}`;
     });
 
     // Apple Pay
     document.getElementById('applePayButton').addEventListener('click', function() {
       const amount = getAmount();
       if (!amount) return;
-      const url = `https://edfa-pay.com/applepay?merchantId=${merchantId}&amount=${amount}`;
-      openCheckout(url, 'تم تحويلك إلى Apple Pay!');
+      window.location.href = `https://edfa-pay.com/applepay?merchantId=${merchantId}&amount=${amount}`;
     });
   </script>
 
