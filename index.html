@@ -6,12 +6,11 @@
   <title>صفحة الدفع - EdfaPay</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #f4f7fa;
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
       margin: 0;
     }
@@ -21,14 +20,14 @@
       padding: 40px 30px;
       border-radius: 15px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      width: 350px;
       text-align: center;
-      width: 320px;
     }
 
     h1 {
-      color: #333;
-      margin-bottom: 25px;
       font-size: 24px;
+      margin-bottom: 25px;
+      color: #333;
     }
 
     input {
@@ -92,7 +91,7 @@
   <script>
     const merchantId = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
 
-    // تظهر زر Apple Pay فقط على الأجهزة المدعومة
+    // يظهر زر Apple Pay فقط على الأجهزة المدعومة
     if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
       document.getElementById('applePayButton').style.display = 'block';
     }
@@ -106,22 +105,30 @@
       return amount;
     }
 
+    function openCheckout(url, successMessage) {
+      const newWindow = window.open(url, '_blank');
+      if (newWindow) {
+        document.getElementById('confirmation').style.display = 'block';
+        document.getElementById('confirmation').textContent = successMessage;
+      } else {
+        alert("يرجى السماح بفتح النوافذ المنبثقة في المتصفح.");
+      }
+    }
+
     // الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
       const amount = getAmount();
       if (!amount) return;
-      window.open(`https://edfa-pay.com/checkout?merchantId=${merchantId}&amount=${amount}`, '_blank');
-      document.getElementById('confirmation').style.display = 'block';
-      document.getElementById('confirmation').textContent = 'تم تحويلك إلى صفحة الدفع!';
+      const url = `https://edfa-pay.com/checkout?merchantId=${merchantId}&amount=${amount}`;
+      openCheckout(url, 'تم تحويلك إلى صفحة الدفع!');
     });
 
     // Apple Pay
     document.getElementById('applePayButton').addEventListener('click', function() {
       const amount = getAmount();
       if (!amount) return;
-      window.open(`https://edfa-pay.com/applepay?merchantId=${merchantId}&amount=${amount}`, '_blank');
-      document.getElementById('confirmation').style.display = 'block';
-      document.getElementById('confirmation').textContent = 'تم تحويلك إلى Apple Pay!';
+      const url = `https://edfa-pay.com/applepay?merchantId=${merchantId}&amount=${amount}`;
+      openCheckout(url, 'تم تحويلك إلى Apple Pay!');
     });
   </script>
 
