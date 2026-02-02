@@ -12,7 +12,7 @@
       background-color: #f9f9f9;
     }
     h2 { margin-bottom: 20px; }
-    select, button {
+    input, button {
       font-size: 18px;
       padding: 10px 20px;
       margin: 10px;
@@ -27,12 +27,8 @@
 </head>
 <body>
 
-  <h2>اختر المبلغ:</h2>
-  <select id="amount">
-    <option value="50">50 ريال</option>
-    <option value="100">100 ريال</option>
-    <option value="200">200 ريال</option>
-  </select>
+  <h2>أدخل المبلغ:</h2>
+  <input type="number" id="amount" placeholder="ضع المبلغ هنا" min="1">
 
   <br>
 
@@ -44,12 +40,16 @@
 
   <script src="https://edfa-pay.com/sdk.js"></script>
   <script>
-    // 🔹 معرف التاجر من حسابك في EdfaPay
+    // 🔹 معرف التاجر الحقيقي
     const merchantId = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
 
     // زر الدفع العادي
     document.getElementById('payButton').addEventListener('click', function() {
       const amount = document.getElementById('amount').value;
+      if (!amount || amount <= 0) {
+        alert("الرجاء إدخال مبلغ صالح!");
+        return;
+      }
       EdfaPay.checkout({
         amount: amount,
         currency: 'SAR',
@@ -67,6 +67,10 @@
     // زر Apple Pay
     document.getElementById('applePayButton').addEventListener('click', function() {
       const amount = document.getElementById('amount').value;
+      if (!amount || amount <= 0) {
+        alert("الرجاء إدخال مبلغ صالح!");
+        return;
+      }
       EdfaPay.applePay({
         amount: amount,
         currency: 'SAR',
