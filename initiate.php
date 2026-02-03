@@ -3,51 +3,56 @@
 // DOLR PAY – EdfaPay Payment Initiator
 // =======================================================
 
-// 🔐 === البيانات التي تحتاج تغييرها ===
-// احصل على هذه البيانات من لوحة تحكم أدف باي (EdfaPay)
- $MERCHANT_ID = "ضع_هنا_الmerchant_ID"; 
- $MERCHANT_PASSWORD = "ضع_هنا_الmerchant_Password";
+// 🔐 === بيانات التاجر (محدثة) ===
+ $MERCHANT_ID = "983c9669-9278-4dd1-950f-8b8fbb0a14d2";
+ $MERCHANT_PASSWORD = "7ceb6437-92bc-411b-98fa-be054b39eaba";
 
-// رابط الـ API الخاص بـ Adfapay
+// Endpoint
  $EDFA_URL = "https://api.edfapay.com/payment/initiate";
 
 header("Content-Type: application/json; charset=utf-8");
 
-// قراءة البيانات القادمة من الواجهة (GitHub Pages)
+// =======================================================
+// Read JSON body
+// =======================================================
  $raw = file_get_contents("php://input");
  $body = json_decode($raw, true);
 
  $amount = isset($body["amount"]) ? number_format((float)$body["amount"], 2, ".", "") : "0.00";
  $description = trim($body["description"] ?? "Order");
  $email = trim($body["email"] ?? "none@example.com");
- $phone = preg_replace('/\D+/', '', $body["phone"] ?? ""); // تنظيف الرقم من أي رموز
+ $phone = preg_replace('/\D+/', '', $body["phone"] ?? "");
 
 // =======================================================
-// التحقق من صحة البيانات
+// Validate
 // =======================================================
 if ($amount <= 0) {
   echo json_encode(["error" => "مبلغ غير صالح"]);
   exit;
 }
 
-// التأكد أن رقم الجوال سعودي ويبدأ بـ 5 (مثال)
 if (!preg_match('/^[5][0-9]{8}$/', $phone)) {
-  echo json_encode(["error" => "صيغة رقم الجوال يجب أن تكون 9 أرقام وتبدأ بـ 5 (مثال: 512345678)"]);
+  echo json_encode(["error" => "صيغة رقم الجوال غير صحيحة (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)"]);
   exit;
 }
 
 // =======================================================
-// تجهيز بيانات الطلب
+// Order data (MATCH worker.js logic)
 // =======================================================
- $orderId  = "DOLR-" . time(); // بادئة Dolr للطلبات
+ $orderId  = "DOLR-" . time();
  $currency = "SAR";
 
-// حفظ الطلب محلياً (محاكاة قاعدة البيانات)
+// =======================
+// حفظ الطلب محليًا
+// =======================
  $storeFile = __DIR__ . "/orders.json";
+
  $orders = [];
 if (file_exists($storeFile)) {
     $orders = json_decode(file_get_contents($storeFile), true);
-    if (!is_array($orders)) $orders = [];
+    if (!is_array($orders)) {
+        $orders = [];
+    }
 }
 
  $orders[$orderId] = [
@@ -57,14 +62,31 @@ if (file_exists($storeFile)) {
     "description" => $description,
     "email"       => $email,
     "phone"       => $phone,
-    "status"      => "PENDING",
-    "created_at"  => time()
+    "created_at"  => time(),
+    "status"      => "PENDING"
 ];
-file_put_contents($storeFile, json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+file_put_contents(
+    $storeFile,
+    json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+);
 
 // =======================================================
-// حساب التوقيع (HASH)
-// الصيغة: sha1(md5(UPPER(orderId + amount + currency + description + password)))
+// Client IP
+// =======================================================
+ $clientIp =
+  $_SERVER["HTTP_CF_CONNECTING_IP"] ??
+  $_SERVER["HTTP_X_FORWARDED_FOR"] ??
+  $_SERVER["REMOTE_ADDR"] ??
+  "127.0.0.1";
+
+if (strpos($clientIp, ":") !== false) {
+  $clientIp = "127.0.0.1";
+}
+
+// =======================================================
+// HASH (IDENTICAL TO worker.js)
+// sha1(md5(UPPER(orderId + amount + currency + description + password)))
 // =======================================================
  $hashBase = strtoupper(
   $orderId .
@@ -76,22 +98,24 @@ file_put_contents($storeFile, json_encode($orders, JSON_PRETTY_PRINT | JSON_UNES
  $hash = sha1(md5($hashBase));
 
 // =======================================================
-// === روابط العودة (Callback URLs) ===
-// ⚠️ قم بتغيير الدومين هنا إلى الدومين الخاص باستضافة الـ PHP
+// === تحديث روابط العودة (مهم جداً) ===
+// يجب عليك تغيير الرابط أدناه إلى رابط موقعك الحقيقي (الذي يوجد عليه ملفات PHP)
 // =======================================================
- $myDomain = "https://your-php-domain.com/buytvapp"; 
+ $myDomain = "https://your-domain.com/buytvapp"; 
 
 // =======================================================
-// إعداد الحقول المرسلة للبنك
+// Build multipart/form-data
 // =======================================================
  $form = [
   "action" => "SALE",
   "edfa_merchant_id" => $MERCHANT_ID,
+
   "order_id" => $orderId,
   "order_amount" => $amount,
   "order_currency" => $currency,
   "order_description" => $description,
   "req_token" => "Y",
+
   "payer_first_name" => "Dolr",
   "payer_last_name" => "Customer",
   "payer_email" => $email,
@@ -100,30 +124,35 @@ file_put_contents($storeFile, json_encode($orders, JSON_PRETTY_PRINT | JSON_UNES
   "payer_city" => "Riyadh",
   "payer_address" => "Online",
   "payer_zip" => "12221",
-  "payer_ip" => $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1",
+  "payer_ip" => $clientIp,
 
-  // روابط العودة والاستقبال
+  // روابط الإشعارات
   "term_url_3ds" => "$myDomain/callback.php",
-  "success_url"  => "$myDomain/callback.php", // يمكن جعلها success.php إذا فضلت
-  "failure_url"  => "$myDomain/callback.php", // يمكن جعلها error.php
+  "success_url"  => "$myDomain/callback.php",
+  "failure_url"  => "$myDomain/callback.php",
   "callback_url" => "$myDomain/callback.php",
 
   "auth" => "N",
   "recurring_init" => "N",
-  "hash" => $hash // التوقيع
+
+  // HASH فقط
+  "hash" => $hash
 ];
 
 // =======================================================
-// إرسال الطلب للبنك
+// Send request (multipart)
 // =======================================================
  $ch = curl_init($EDFA_URL);
 curl_setopt_array($ch, [
   CURLOPT_POST => true,
-  CURLOPT_POSTFIELDS => $form,
+  CURLOPT_POSTFIELDS => $form, // multipart
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_TIMEOUT => 40,
   CURLOPT_SSL_VERIFYPEER => true,
-  CURLOPT_HTTPHEADER => ["Accept: application/json"]
+  CURLOPT_SSL_VERIFYHOST => 2,
+  CURLOPT_HTTPHEADER => [
+    "Accept: application/json"
+  ]
 ]);
 
  $response = curl_exec($ch);
@@ -131,30 +160,32 @@ curl_setopt_array($ch, [
 curl_close($ch);
 
 // =======================================================
-// معالجة الرد
+// Handle response
 // =======================================================
 if (!$response) {
-  echo json_encode(["error" => "فشل الاتصال ببوابة الدفع", "details" => $error]);
+  echo json_encode([
+    "error" => "فشل الاتصال ببوابة الدفع",
+    "details" => $error
+  ]);
   exit;
 }
 
+// حاول JSON
  $data = json_decode($response, true);
-
-// إذا كان الرد يحتوي على HTML للفورم المباشر (3DS)
-if (isset($data['html'])) {
-    echo json_encode(["html" => $data['html']]);
+if (is_array($data)) {
+    // إذا كان الرد يحتوي على HTML للفورم (3DS)
+    if (isset($data['html'])) {
+        echo json_encode(["html" => $data['html']]);
+        exit;
+    }
+    // إذا كان رابط تحويل
+    echo json_encode($data);
     exit;
 }
 
-// إذا كان الرد يحتوي على رابط توجيه
-if (isset($data['redirect_url'])) {
-    echo json_encode(["redirect_url" => $data['redirect_url']]);
-    exit;
-}
-
-// في حال حدث خطأ من البنك
+// fallback
 echo json_encode([
-    "error" => "رد غير متوقع من البوابة",
-    "raw" => $response
+  "error" => "رد غير متوقع من البوابة",
+  "raw" => $response
 ]);
 ?>
