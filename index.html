@@ -4,247 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dolr Payment Gateway</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #10b981; /* لون دولر الأخضر */
-            --primary-dark: #059669;
-            --bg-dark: #0f172a;
-            --surface: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --error: #ef4444;
-            --radius: 16px;
-        }
-
+        :root { --primary: #10b981; --bg: #0f172a; --surface: #1e293b; --text: #f8fafc; --border: #334155; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 40%);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 40px 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.6s ease-out;
-        }
-
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 40%); }
+        .container { width: 100%; max-width: 480px; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); animation: fadeIn 0.6s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 32px; font-weight: 800; color: var(--primary); letter-spacing: -1px; margin-bottom: 8px; }
         .logo span { color: white; }
-
-        .subtitle { color: var(--text-muted); font-size: 14px; }
-
+        .subtitle { color: #94a3b8; font-size: 14px; }
         .form-group { margin-bottom: 20px; position: relative; }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        .input-wrapper { position: relative; }
-
-        .input-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 14px 45px 14px 16px; /* Space for icon */
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
-        }
-
-        .btn-pay {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-pay:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-pay:active { transform: translateY(0); }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: #94a3b8; }
+        input { width: 100%; padding: 14px 16px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); border-radius: 12px; color: white; font-size: 16px; transition: 0.3s; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+        .btn-pay { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4); }
         .btn-pay:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-        /* Spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            display: none;
-        }
+        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        
+        /* تنسيق رسائل الخطأ */
+        .toast { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); 
+            background: #333; color: white; padding: 15px 25px; border-radius: 12px; 
+            font-size: 14px; transition: 0.4s; z-index: 1000; 
+            max-width: 90%; text-align: right; white-space: pre-wrap; /* لدعم الأسطر الجديدة */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
-        .toast.error { background: var(--error); }
-        .toast.success { background: var(--primary); }
-
-        .helper-text {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 5px;
-            text-align: left;
-            padding-left: 5px;
-        }
-
-        @media (max-width: 480px) {
-            .container { padding: 30px 20px; }
-            .logo { font-size: 28px; }
-        }
+        .toast.error { background: #ef4444; border: 1px solid #dc2626; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="header">
-            <div class="logo">
-                <span>$</span> Dolr
-            </div>
+            <div class="logo"><span>$</span> Dolr</div>
             <p class="subtitle">بوابة دفع آمنة وسريعة</p>
         </div>
-
         <form id="paymentForm">
             <div class="form-group">
-                <label for="amount">المبلغ (ر.س)</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">💰</span>
-                    <input type="number" id="amount" placeholder="0.00" step="0.01" min="1" required>
-                </div>
+                <label>المبلغ (ر.س)</label>
+                <input type="number" id="amount" placeholder="0.00" step="0.01" min="1" required>
             </div>
-
             <div class="form-group">
-                <label for="description">وصف الخدمة / المنتج</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">📝</span>
-                    <input type="text" id="description" placeholder="مثال: اشتراك VIP" required>
-                </div>
+                <label>وصف الخدمة</label>
+                <input type="text" id="description" placeholder="مثال: اشتراك VIP" required>
             </div>
-
             <div class="form-group">
-                <label for="email">البريد الإلكتروني</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">✉️</span>
-                    <input type="email" id="email" placeholder="name@example.com" required>
-                </div>
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="name@example.com" required>
             </div>
-
             <div class="form-group">
-                <label for="phone">رقم الجوال (للإشعارات)</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">📱</span>
-                    <input type="tel" id="phone" placeholder="5xxxxxxxx" maxlength="12" required>
-                </div>
-                <p class="helper-text">يجب أن يبدأ بـ 5 ويكون مكون من 9 أرقام (بدون مفتاح الدولة)</p>
+                <label>رقم الجوال (9 أرقام تبدأ بـ 5)</label>
+                <input type="tel" id="phone" placeholder="5xxxxxxxx" maxlength="9" required>
             </div>
-
             <button type="submit" class="btn-pay" id="payBtn">
                 <span class="btn-text">إتمام الدفع الآمن</span>
                 <div class="spinner"></div>
             </button>
         </form>
     </div>
-
-    <div id="toast" class="toast">
-        <span id="toastIcon"></span>
-        <span id="toastMessage"></span>
-    </div>
-
+    <div id="toast" class="toast"></div>
+    
     <script>
-        // ==========================================
-        // ⚙️ إعدادات الاتصال بالباك إند (PHP)
-        // ==========================================
-        // ضع هنا رابط ملف الـ PHP (initiate.php) على سيرفرك
-        // مثال: const BACKEND_URL = "https://your-domain.com/api/initiate.php";
-        const BACKEND_URL = "http://localhost/buytvapp/initiate.php"; 
-
-        // ==========================================
-        // التعامل مع الواجهة
-        // ==========================================
         const form = document.getElementById('paymentForm');
         const payBtn = document.getElementById('payBtn');
         const btnText = payBtn.querySelector('.btn-text');
@@ -252,8 +76,8 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // 1. تجميع البيانات
+            
+            // تجميع البيانات
             const formData = {
                 amount: document.getElementById('amount').value,
                 description: document.getElementById('description').value,
@@ -261,80 +85,77 @@
                 phone: document.getElementById('phone').value
             };
 
-            // 2. التحقق البسيط (تأكيد صيغة الجوال)
-            // افتراضنا أن المستخدم يدخل الأرقام فقط، سيقوم الـ PHP بتنظيفها
-            // لكن يفضل التحقق هنا أيضاً لتحسين تجربة المستخدم
-            
-            // 3. تغيير حالة الزر
             setLoading(true);
 
             try {
-                // 4. إرسال الطلب للسيرفر
-                const response = await fetch(BACKEND_URL, {
+                // 1. إرسال الطلب للباك إند
+                const response = await fetch('/api/initiate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
 
-                const result = await response.json();
+                // ==========================================
+                // 2. كشف تفاصيل الخطأ بدقة
+                // ==========================================
+                if (!response.ok) {
+                    let serverErrorDetails = "لم يتمكن المتصفح من قراءة الرد.";
+                    
+                    const contentType = response.headers.get("content-type");
+                    
+                    // إذا كان الرد بصيغة JSON
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        const errorJson = await response.json();
+                        serverErrorDetails = JSON.stringify(errorJson, null, 2);
+                    } else {
+                        // إذا كان الرد نصاً عادياً (HTML Error Page)
+                        serverErrorDetails = await response.text();
+                    }
 
-                if (!response.ok || result.error) {
-                    throw new Error(result.error || "حدث خطأ غير متوقع");
+                    // صياغة رسالة الخطأ النهائية
+                    const finalMessage = `⚠️ خطأ في الاتصال (Status: ${response.status} ${response.statusText})\n\nالتفاصيل:\n${serverErrorDetails}`;
+                    throw new Error(finalMessage);
                 }
 
-                // 5. في حال نجاح الطلب ورد رابط الدفع
-                if (result.redirect_url || result.html) {
-                    // إذا كان الرد HTML (فورم بنك)
-                    if (result.html) {
-                        document.body.innerHTML = result.html;
-                        // البحث عن الفورم وتسليمه تلقائياً
-                        const autoForm = document.querySelector('form');
-                        if (autoForm) autoForm.submit();
-                    } 
-                    // إذا كان الرد رابط توجيه
-                    else if (result.redirect_url) {
-                        window.location.href = result.redirect_url;
-                    }
-                } else {
-                    throw new Error("لم يتم استلام رابط دفع صحيح من البنك");
+                // 3. معالجة البيانات الناجحة
+                const result = await response.json();
+
+                // التأكد من عدم وجود خطأ داخلي
+                if (result.error) {
+                    throw new Error(`خطأ منطقي: ${result.error}`);
+                }
+
+                // 4. التوجيه
+                if (result.html) {
+                    document.body.innerHTML = result.html;
+                    const autoForm = document.querySelector('form');
+                    if (autoForm) autoForm.submit();
+                } else if (result.redirect_url) {
+                    window.location.href = result.redirect_url;
                 }
 
             } catch (error) {
+                // عرض الخطأ على الشاشة
+                console.error("=== Error Log ===", error);
                 showToast(error.message, 'error');
                 setLoading(false);
             }
         });
 
         function setLoading(isLoading) {
-            if (isLoading) {
-                payBtn.disabled = true;
-                btnText.style.display = 'none';
-                spinner.style.display = 'block';
-            } else {
-                payBtn.disabled = false;
-                btnText.style.display = 'block';
-                spinner.style.display = 'none';
-            }
+            payBtn.disabled = isLoading;
+            btnText.style.display = isLoading ? 'none' : 'block';
+            spinner.style.display = isLoading ? 'block' : 'none';
         }
 
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-
             toast.className = `toast ${type} show`;
-            toastMsg.textContent = msg;
-            toastIcon.textContent = type === 'success' ? '✅' : '⚠️';
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
+            toast.textContent = msg;
+            // زيادة وقت الظهور لقراءة التفاصيل
+            setTimeout(() => toast.classList.remove('show'), 15000); 
         }
 
-        // تنسيق حقل الجوال تلقائياً (قبول الأرقام فقط)
         document.getElementById('phone').addEventListener('input', function (e) {
             this.value = this.value.replace(/\D/g, '');
         });
