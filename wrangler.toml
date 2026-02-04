@@ -1,0 +1,13 @@
+name = "rypay"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+kv_namespaces = [
+  { binding = "RYPAY_KV", id = "ca751d1471e04f458a76ee884fcc1b82" }
+]
+
+# Static assets
+[assets]
+binding = "ASSETS"
+directory = "./"
