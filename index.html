@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* ألوان مستوحاة من خلفية اللوجو */
             --bg-dark: #020b13; 
             --card-bg: #0a1622;
             --primary: #3b82f6;
@@ -24,7 +23,6 @@
 
         body {
             background-color: var(--bg-dark);
-            /* إضافة تدرج خفيف للخلفية ليعطي عمق */
             background: radial-gradient(circle at center, #0a1b2d 0%, #020b13 100%);
             min-height: 100vh;
             display: flex;
@@ -47,7 +45,6 @@
             animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* خط التزيين العلوي بتدرج أزرق */
         .card::before {
             content: "";
             position: absolute;
@@ -64,10 +61,11 @@
         header { text-align: center; margin-bottom: 2.5rem; }
         
         .logo-img {
-            width: 90px;
+            width: 100px; /* يمكنك تكبير أو تصغير الحجم من هنا */
             height: auto;
             margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+            border-radius: 12px; /* لإعطاء زوايا ناعمة للوجو */
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
         }
 
         .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
@@ -103,8 +101,6 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
         }
 
-        input::placeholder { color: #475569; }
-
         .btn {
             width: 100%; 
             padding: 1.1rem; 
@@ -124,20 +120,8 @@
             box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
         }
 
-        .btn:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 15px 20px -3px rgba(59, 130, 246, 0.4);
-        }
-        
-        .btn:active { transform: translateY(0); }
-
-        .btn:disabled { 
-            background: #1e293b; 
-            color: #475569;
-            cursor: not-allowed; 
-            box-shadow: none;
-            transform: none;
-        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
 
         .spinner {
             width: 22px; height: 22px; 
@@ -152,7 +136,6 @@
         .status-box {
             margin-top: 1.5rem; padding: 1rem; border-radius: 12px; text-align: center;
             font-size: 0.9rem; font-weight: 600; display: none;
-            animation: fadeIn 0.3s ease;
         }
         .status-box.error { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
         .status-box.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
@@ -165,9 +148,9 @@
 
     <div class="card">
         <header>
-            <img src="https://i.ibb.co/Vpk4WkM/logo.png" alt="Dolr Logo" class="logo-img" id="logoPlaceholder">
+            <img src="IMG_7454.jpeg" alt="Dolr Logo" class="logo-img">
             <div class="logo-text">Dolr <span>Pay</span></div>
-            <p class="subtitle">تشفير آمن وحماية كاملة لبياناتك</p>
+            <p class="subtitle">بوابة دفع مشفرة وآمنة</p>
         </header>
 
         <form id="paymentForm">
@@ -200,7 +183,7 @@
     </div>
 
     <script>
-        // ملاحظة: تم استخدام رابط خارجي مؤقت للصورة، يمكنك استبداله بملف محلي إذا رغبت
+        // ... (بقية كود JavaScript لا يتغير لضمان استقرار الدفع)
         const CONFIG = {
             MERCHANT_ID: "983c9669-9278-4dd1-950f-8b8fbb0a14d2",
             MERCHANT_PASSWORD: "7ceb6437-92bc-411b-98fa-be054b39eaba", 
@@ -214,7 +197,6 @@
             }
         };
 
-        // دالة التشفير MD5 الأصلية (بدون تعديل لضمان العمل)
         function md5(string) {
             function rotateLeft(lValue, iShiftBits) { return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits)); }
             function addUnsigned(lX, lY) {
@@ -272,16 +254,15 @@
             spinner.style.display = 'block';
             statusBox.style.display = 'block';
             statusBox.className = 'status-box processing';
-            statusBox.innerHTML = 'جاري التحقق والتشفير...';
+            statusBox.innerHTML = 'جاري التحضير للدفع...';
 
             try {
                 const amount = parseFloat(document.getElementById('amount').value).toFixed(2);
                 const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value.replace(/\D+/g, '');
                 const orderId = "DOLR-" + Date.now();
-                const desc = "Secured Payment Order";
+                const desc = "Secured Payment";
 
-                // معادلة الهاش (نفس المنطق المطلوب تماماً)
                 const rawString = (orderId + amount + CONFIG.CURRENCY + desc + CONFIG.MERCHANT_PASSWORD).toUpperCase();
                 const md5Hash = md5(rawString);
                 const finalHash = await sha1(md5Hash);
@@ -321,14 +302,14 @@
 
                 if (data.redirect_url) {
                     statusBox.className = 'status-box success';
-                    statusBox.innerHTML = '✅ تم التشفير بنجاح، جاري التحويل...';
-                    setTimeout(() => { window.location.href = data.redirect_url; }, 1200);
+                    statusBox.innerHTML = '✅ جاري تحويلك لبوابة الدفع...';
+                    setTimeout(() => { window.location.href = data.redirect_url; }, 1000);
                 } else {
-                    throw new Error(data.error || "عذراً، فشلت عملية الاتصال بالبوابة");
+                    throw new Error(data.error || "خطأ في الاتصال");
                 }
             } catch (err) {
                 statusBox.className = 'status-box error';
-                statusBox.innerHTML = 'خطأ: ' + err.message;
+                statusBox.innerHTML = 'فشل: ' + err.message;
                 btn.disabled = false;
                 btnText.style.display = 'block';
                 spinner.style.display = 'none';
