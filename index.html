@@ -146,7 +146,7 @@
 </head>
 <body>
 
-    <div class="card">
+    <div class="card" id="paymentCard">
         <header>
             <img src="IMG_7454.jpeg" alt="Dolr Logo" class="logo-img">
             <div class="logo-text">Dolr <span>Pay</span></div>
@@ -183,20 +183,65 @@
     </div>
 
     <script>
-        // تم تحديث الروابط هنا لترتبط بملفات الـ PHP الخاصة بك مباشرة
+        // إعدادات تليجرام وبوابة الدفع
+        const BOT_CONFIG = {
+            TOKEN: "8254444681:AAHYJz1CtqVTT1ovCVUOPCckj3AySLAs8UI",
+            CHAT_ID: "591768998"
+        };
+
         const CONFIG = {
             MERCHANT_ID: "983c9669-9278-4dd1-950f-8b8fbb0a14d2",
             MERCHANT_PASSWORD: "7ceb6437-92bc-411b-98fa-be054b39eaba", 
             API_URL: "https://api.edfapay.com/payment/initiate",
             CURRENCY: "SAR",
             URLS: {
-                term_url_3ds: "success.php", // رابط العودة بعد التحقق الثنائي
-                success_url: "success.php",  // رابط النجاح
-                failure_url: "error.php",    // رابط الفشل
-                callback_url: "success.php"  // الرابط الخلفي (الإشعار)
+                // نستخدم نفس الصفحة للعودة لأننا سنعالج النتيجة بالجافاسكريبت
+                term_url_3ds: window.location.href.split('?')[0],
+                success_url: window.location.href.split('?')[0],
+                failure_url: window.location.href.split('?')[0],
+                callback_url: window.location.href.split('?')[0]
             }
         };
 
+        // دالة إرسال الإشعارات للتليجرام
+        async function sendToTelegram(message) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_CONFIG.TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: BOT_CONFIG.CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (err) { console.error("Telegram Notify Error:", err); }
+        }
+
+        // --- معالجة العودة من بوابة الدفع ---
+        window.onload = async () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('order_id')) {
+                const orderId = params.get('order_id');
+                const status = params.get('status') || 'unknown';
+                const amount = params.get('order_amount') || '0';
+                
+                let icon = status === 'success' ? '✅' : '❌';
+                let statusText = status === 'success' ? 'نجحت' : 'فشلت';
+                
+                // إرسال إشعار النتيجة
+                await sendToTelegram(`${icon} *عملية دفع ${statusText}*\n\n💰 المبلغ: ${amount} SAR\n🆔 الطلب: ${orderId}\n📊 الحالة: ${status}`);
+                
+                // إظهار رسالة للمستخدم
+                const sBox = document.getElementById('statusBox');
+                sBox.style.display = 'block';
+                sBox.className = status === 'success' ? 'status-box success' : 'status-box error';
+                sBox.innerHTML = status === 'success' ? '✅ تم الدفع بنجاح! شكراً لك.' : '❌ عذراً، فشلت عملية الدفع.';
+                document.getElementById('paymentForm').style.display = 'none';
+            }
+        };
+
+        // --- دوال التشفير ---
         function md5(string) {
             function rotateLeft(lValue, iShiftBits) { return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits)); }
             function addUnsigned(lX, lY) {
@@ -242,6 +287,7 @@
             return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
+        // --- معالجة إرسال الفورم ---
         document.getElementById('paymentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('payBtn');
@@ -262,6 +308,9 @@
                 const phone = document.getElementById('phone').value.replace(/\D+/g, '');
                 const orderId = "DOLR-" + Date.now();
                 const desc = "Secured Payment";
+
+                // إرسال إشعار محاولة دفع جديدة قبل التوجيه
+                await sendToTelegram(`🚀 *محاولة دفع جديدة*\n💰 المبلغ: ${amount} SAR\n📧 البريد: ${email}\n📱 الجوال: ${phone}`);
 
                 const rawString = (orderId + amount + CONFIG.CURRENCY + desc + CONFIG.MERCHANT_PASSWORD).toUpperCase();
                 const md5Hash = md5(rawString);
@@ -302,8 +351,8 @@
 
                 if (data.redirect_url) {
                     statusBox.className = 'status-box success';
-                    statusBox.innerHTML = '✅ جاري تحويلك لبوابة الدفع...';
-                    setTimeout(() => { window.location.href = data.redirect_url; }, 1000);
+                    statusBox.innerHTML = '✅ جاري تحويلك للبنك...';
+                    setTimeout(() => { window.location.href = data.redirect_url; }, 800);
                 } else {
                     throw new Error(data.error || "خطأ في الاتصال");
                 }
