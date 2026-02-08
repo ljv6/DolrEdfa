@@ -7,21 +7,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* ألوان مستوحاة من خلفية اللوجو */
+            --bg-dark: #020b13; 
+            --card-bg: #0a1622;
             --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --text-main: #1e293b;
-            --text-light: #64748b;
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --input-bg: #111e2d;
+            --border: #1e293b;
             --error: #ef4444;
-            --radius: 16px;
+            --radius: 20px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
+            /* إضافة تدرج خفيف للخلفية ليعطي عمق */
+            background: radial-gradient(circle at center, #0a1b2d 0%, #020b13 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -33,73 +37,148 @@
         .card {
             background: var(--card-bg);
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             padding: 2.5rem;
             border-radius: var(--radius);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
-            border-top: 5px solid var(--primary);
-            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* خط التزيين العلوي بتدرج أزرق */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
 
-        header { text-align: center; margin-bottom: 2rem; }
-        .logo { font-size: 2rem; font-weight: 800; color: var(--text-main); }
-        .logo span { color: var(--primary); }
-        .subtitle { color: var(--text-light); font-size: 0.9rem; margin-top: 5px; }
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 700; font-size: 0.9rem; }
+        header { text-align: center; margin-bottom: 2.5rem; }
+        
+        .logo-img {
+            width: 90px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+        }
+
+        .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+        .logo-text span { color: var(--primary); }
+        .subtitle { color: var(--text-dim); font-size: 0.85rem; margin-top: 5px; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { 
+            display: block; 
+            margin-bottom: 0.6rem; 
+            font-weight: 600; 
+            font-size: 0.85rem; 
+            color: var(--text-dim);
+            padding-right: 5px;
+        }
+
         input {
-            width: 100%; padding: 0.85rem 1rem; border: 1px solid #cbd5e1;
-            border-radius: 10px; font-size: 1rem; outline: none; transition: 0.2s;
-            background-color: #f8fafc;
+            width: 100%; 
+            padding: 1rem; 
+            border: 1px solid var(--border);
+            border-radius: 12px; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: all 0.3s ease;
+            background-color: var(--input-bg);
+            color: white;
+            text-align: right;
         }
-        input:focus { border-color: var(--primary); background-color: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        input:focus { 
+            border-color: var(--primary); 
+            background-color: #0d1a29; 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
+        }
+
+        input::placeholder { color: #475569; }
 
         .btn {
-            width: 100%; padding: 1rem; background-color: var(--primary); color: white;
-            border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700;
-            cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+            width: 100%; 
+            padding: 1.1rem; 
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1.1rem; 
+            font-weight: 700;
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px;
+            margin-top: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
         }
-        .btn:hover { background-color: var(--primary-dark); }
-        .btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -3px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn:active { transform: translateY(0); }
+
+        .btn:disabled { 
+            background: #1e293b; 
+            color: #475569;
+            cursor: not-allowed; 
+            box-shadow: none;
+            transform: none;
+        }
 
         .spinner {
-            width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; display: none;
+            width: 22px; height: 22px; 
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 50%; 
+            border-top-color: #fff; 
+            animation: spin 0.8s linear infinite; 
+            display: none;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .status-box {
-            margin-top: 1.5rem; padding: 0.8rem; border-radius: 8px; text-align: center;
+            margin-top: 1.5rem; padding: 1rem; border-radius: 12px; text-align: center;
             font-size: 0.9rem; font-weight: 600; display: none;
+            animation: fadeIn 0.3s ease;
         }
-        .status-box.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-        .status-box.success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .status-box.processing { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .status-box.error { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-box.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .status-box.processing { background: rgba(59, 130, 246, 0.1); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2); }
 
-        footer { text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #94a3b8; }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: var(--text-dim); }
     </style>
 </head>
 <body>
 
     <div class="card">
         <header>
-            <div class="logo">Dolr <span>Pay</span></div>
-            <p class="subtitle">بوابة دفع آمنة وسريعة</p>
+            <img src="https://i.ibb.co/Vpk4WkM/logo.png" alt="Dolr Logo" class="logo-img" id="logoPlaceholder">
+            <div class="logo-text">Dolr <span>Pay</span></div>
+            <p class="subtitle">تشفير آمن وحماية كاملة لبياناتك</p>
         </header>
 
         <form id="paymentForm">
             <div class="form-group">
-                <label>المبلغ (SAR)</label>
+                <label>مبلغ الدفع (SAR)</label>
                 <input type="number" id="amount" step="0.01" placeholder="0.00" required>
             </div>
 
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
-                <input type="email" id="email" placeholder="name@example.com" required>
+                <input type="email" id="email" placeholder="example@mail.com" required>
             </div>
 
             <div class="form-group">
@@ -108,7 +187,7 @@
             </div>
 
             <button type="submit" class="btn" id="payBtn">
-                <span id="btnText">دفع آمن</span>
+                <span id="btnText">إتمام الدفع الآمن</span>
                 <div class="spinner" id="spinner"></div>
             </button>
         </form>
@@ -121,6 +200,7 @@
     </div>
 
     <script>
+        // ملاحظة: تم استخدام رابط خارجي مؤقت للصورة، يمكنك استبداله بملف محلي إذا رغبت
         const CONFIG = {
             MERCHANT_ID: "983c9669-9278-4dd1-950f-8b8fbb0a14d2",
             MERCHANT_PASSWORD: "7ceb6437-92bc-411b-98fa-be054b39eaba", 
@@ -134,7 +214,7 @@
             }
         };
 
-        // دالة التشفير MD5 (نفس المنطق الأصلي)
+        // دالة التشفير MD5 الأصلية (بدون تعديل لضمان العمل)
         function md5(string) {
             function rotateLeft(lValue, iShiftBits) { return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits)); }
             function addUnsigned(lX, lY) {
@@ -180,7 +260,6 @@
             return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // معالجة الدفع
         document.getElementById('paymentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('payBtn');
@@ -188,27 +267,25 @@
             const btnText = document.getElementById('btnText');
             const spinner = document.getElementById('spinner');
 
-            // إعداد الواجهة
             btn.disabled = true;
             btnText.style.display = 'none';
             spinner.style.display = 'block';
             statusBox.style.display = 'block';
             statusBox.className = 'status-box processing';
-            statusBox.innerHTML = 'جاري معالجة البيانات...';
+            statusBox.innerHTML = 'جاري التحقق والتشفير...';
 
             try {
                 const amount = parseFloat(document.getElementById('amount').value).toFixed(2);
                 const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value.replace(/\D+/g, '');
                 const orderId = "DOLR-" + Date.now();
-                const desc = "Payment Order";
+                const desc = "Secured Payment Order";
 
-                // توليد الهاش بنفس المعادلة الأصلية
+                // معادلة الهاش (نفس المنطق المطلوب تماماً)
                 const rawString = (orderId + amount + CONFIG.CURRENCY + desc + CONFIG.MERCHANT_PASSWORD).toUpperCase();
                 const md5Hash = md5(rawString);
                 const finalHash = await sha1(md5Hash);
 
-                // تجهيز البيانات للإرسال
                 const formData = new FormData();
                 formData.append("action", "SALE");
                 formData.append("edfa_merchant_id", CONFIG.MERCHANT_ID);
@@ -234,19 +311,24 @@
                 formData.append("recurring_init", "N");
                 formData.append("hash", finalHash);
 
-                const response = await fetch(CONFIG.API_URL, { method: 'POST', body: formData, headers: { "Accept": "application/json" } });
+                const response = await fetch(CONFIG.API_URL, { 
+                    method: 'POST', 
+                    body: formData, 
+                    headers: { "Accept": "application/json" } 
+                });
+                
                 const data = await response.json();
 
                 if (data.redirect_url) {
                     statusBox.className = 'status-box success';
-                    statusBox.innerHTML = '✅ تم التجهيز! جاري التحويل...';
-                    setTimeout(() => { window.location.href = data.redirect_url; }, 1000);
+                    statusBox.innerHTML = '✅ تم التشفير بنجاح، جاري التحويل...';
+                    setTimeout(() => { window.location.href = data.redirect_url; }, 1200);
                 } else {
-                    throw new Error(data.error || "خطأ في الاتصال بالبوابة");
+                    throw new Error(data.error || "عذراً، فشلت عملية الاتصال بالبوابة");
                 }
             } catch (err) {
                 statusBox.className = 'status-box error';
-                statusBox.innerHTML = 'فشل: ' + err.message;
+                statusBox.innerHTML = 'خطأ: ' + err.message;
                 btn.disabled = false;
                 btnText.style.display = 'block';
                 spinner.style.display = 'none';
