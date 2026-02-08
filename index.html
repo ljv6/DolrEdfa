@@ -61,10 +61,10 @@
         header { text-align: center; margin-bottom: 2.5rem; }
         
         .logo-img {
-            width: 100px; /* يمكنك تكبير أو تصغير الحجم من هنا */
+            width: 100px;
             height: auto;
             margin-bottom: 1rem;
-            border-radius: 12px; /* لإعطاء زوايا ناعمة للوجو */
+            border-radius: 12px;
             filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
         }
 
@@ -183,17 +183,17 @@
     </div>
 
     <script>
-        // ... (بقية كود JavaScript لا يتغير لضمان استقرار الدفع)
+        // تم تحديث الروابط هنا لترتبط بملفات الـ PHP الخاصة بك مباشرة
         const CONFIG = {
             MERCHANT_ID: "983c9669-9278-4dd1-950f-8b8fbb0a14d2",
             MERCHANT_PASSWORD: "7ceb6437-92bc-411b-98fa-be054b39eaba", 
             API_URL: "https://api.edfapay.com/payment/initiate",
             CURRENCY: "SAR",
             URLS: {
-                term_url_3ds: "/callback.php",
-                success_url: "/success.php",
-                failure_url: "/error.php",
-                callback_url: "/callback.php"
+                term_url_3ds: "success.php", // رابط العودة بعد التحقق الثنائي
+                success_url: "success.php",  // رابط النجاح
+                failure_url: "error.php",    // رابط الفشل
+                callback_url: "success.php"  // الرابط الخلفي (الإشعار)
             }
         };
 
